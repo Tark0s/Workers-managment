@@ -72,15 +72,31 @@ class WorkTimesApiController extends AbstractController
             case 7:
                 $date = \DateTime::createFromFormat('m.Y', $data['date']);
 
-//                TODO
                 $workTimes = $workTimeRepository->findByYearAndMonthAndWorker($date->format('Y'), $date->format('m'), $worker->getId());
 
+                $workHours = 0;
+
+                foreach ($workTimes as $workTime) {
+                    $workTime = $workTimeRepository->findOneBy(['id' => $workTime['id']]);
+                    $workHours += $workTime->getWorkHours();
+                }
+
+                if ($workHours > 40) {
+                    $normalWorkHours = 40;
+                    $overtimeWorkHours = $workHours - $normalWorkHours;
+                } else {
+                    $overtimeWorkHours = 0;
+                    $normalWorkHours = $workHours;
+                }
+
+                $total = $normalWorkHours * $hourlyRate + $overtimeWorkHours * $overtimeHourlyRate;
 
                 return new JsonResponse([
                     'hourly rate' => $hourlyRate,
                     'overtime hourly rate' => $overtimeHourlyRate ,
-//                    // TODO
-//                    'number of normal hours of a given month' => "TODO",
+                    'number of normal hours of a given month' => $normalWorkHours,
+                    'number of overtime hours in a given month' => $overtimeWorkHours,
+                    'total after recalculation' => $total,
                 ], Response::HTTP_OK);
 
             default:

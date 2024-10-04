@@ -19,26 +19,6 @@ class WorkTimeRepository extends ServiceEntityRepository
         parent::__construct($registry, WorkTime::class);
     }
 
-//    TODO fix query
-//    public function findByYearAndMonthAndWorker(int $year, int $month, Worker $worker)
-//    {
-//        $qb = $this->entityManager->createQueryBuilder();
-//
-//        $qb->select('e')
-//            ->where('strftime(\'%Y\', e.yourDateField) = :year')
-//            ->andWhere('strftime(\'%m\', e.yourDateField) = :month')
-//            ->andWhere('e.worker = :worker')
-//            ->setParameter('year', $year)
-//            ->setParameter('month', $month)
-//            ->setParameter('worker', $worker);
-//
-//        dd($qb->getQuery());
-//
-//        return $qb->getQuery()->getResult();
-//    }
-//
-//
-//
     public function findByYearAndMonthAndWorker(int $year, int $month, string $workerId)
     {
         $sql = "
