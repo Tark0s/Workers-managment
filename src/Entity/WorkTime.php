@@ -11,6 +11,10 @@ use Ramsey\Uuid\UuidInterface;
 #[ORM\Entity(repositoryClass: WorkTimeRepository::class)]
 class WorkTime
 {
+
+    const REQUIRED_MINUTES_T0_HALF_HOUR = 15;
+    const REQUIRED_MINUTES_T0_FULL_HOUR = 45;
+
     public function __construct(
         Worker $worker,
         DateTimeInterface $startDate,
@@ -69,6 +73,20 @@ class WorkTime
 
     public function getWorkHours(): float
     {
-        return $this->startDate->diff($this->endDate)->format('%H');
+        $diff = $this->startDate->diff($this->endDate);
+
+        $hours = (float) $diff->h;
+        $minutes = (float) $diff->i;
+
+        if (
+            $minutes >= self::REQUIRED_MINUTES_T0_HALF_HOUR
+            && $minutes < self::REQUIRED_MINUTES_T0_FULL_HOUR
+        ) {
+            $hours += 0.5;
+        } elseif ($minutes >= self::REQUIRED_MINUTES_T0_FULL_HOUR) {
+            $hours += 1;
+        }
+
+        return $hours;
     }
 }
