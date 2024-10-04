@@ -17,16 +17,35 @@ use Symfony\Component\Routing\Attribute\Route;
 class WorkTimesApiController extends AbstractController
 {
     #[Route(name: 'app_work_time_api_create', methods: ['POST'])]
-    public function create(Request $request, WorkTimeService $workTimeService, WorkerRepository $workerRepository, LoggerInterface $logger): Response
+    public function create(
+        Request $request,
+        WorkTimeService $workTimeService,
+        WorkerRepository $workerRepository,
+        LoggerInterface $logger,
+        WorkTimeRepository $workTimeRepository
+    ): Response
     {
         $data = json_decode($request->getContent(), true);
 
         $worker = $workerRepository->find($data['workerId']);
 
         $startDateTime = new \DateTime($data['startDateTime']);
+
+        if (null !== $workTimeRepository->findOneBy(['startDate' => $startDateTime])){
+            return new JsonResponse(
+                ['error' => 'An employee can only have 1 slot with the same date of start date'],
+                Response::HTTP_BAD_REQUEST);
+        };
+
         $endDateTime = new \DateTime($data['endDateTime']);
 
         $workTime = new WorkTime($worker, $startDateTime, $endDateTime);
+
+        if ($workTime->getWorkHours() > 12){
+            return new JsonResponse(
+                ['error' => 'An employee cannot log more than 12 hours in one slot'],
+                Response::HTTP_BAD_REQUEST);
+        }
 
         try {
             $workTimeService->save($workTime);
