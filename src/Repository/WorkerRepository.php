@@ -6,9 +6,6 @@ use App\Entity\Worker;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Worker>
- */
 class WorkerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

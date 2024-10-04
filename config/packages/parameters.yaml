@@ -2,3 +2,4 @@ parameters:
   monthly_hour_limit: '%env(MONTHLY_HOUR_LIMIT)%'
   hourly_rate: '%env(HOURLY_RATE)%'
   overtime_multiplier: '%env(OVERTIME_MULTIPLIER)%'
+  currency: '%env(CURRENCY)%'

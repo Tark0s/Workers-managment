@@ -66,4 +66,9 @@ class WorkTime
     {
         return $this->day;
     }
+
+    public function getWorkHours(): float
+    {
+        return $this->startDate->diff($this->endDate)->format('%H');
+    }
 }

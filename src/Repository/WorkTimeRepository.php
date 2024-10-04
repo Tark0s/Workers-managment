@@ -2,42 +2,56 @@
 
 namespace App\Repository;
 
+use App\Entity\Worker;
 use App\Entity\WorkTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<WorkTime>
- */
 class WorkTimeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+        private EntityManagerInterface $entityManager
+    )
     {
         parent::__construct($registry, WorkTime::class);
     }
 
-    //    /**
-    //     * @return WorkTime[] Returns an array of WorkTime objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('w.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+//    TODO fix query
+//    public function findByYearAndMonthAndWorker(int $year, int $month, Worker $worker)
+//    {
+//        $qb = $this->entityManager->createQueryBuilder();
+//
+//        $qb->select('e')
+//            ->where('strftime(\'%Y\', e.yourDateField) = :year')
+//            ->andWhere('strftime(\'%m\', e.yourDateField) = :month')
+//            ->andWhere('e.worker = :worker')
+//            ->setParameter('year', $year)
+//            ->setParameter('month', $month)
+//            ->setParameter('worker', $worker);
+//
+//        dd($qb->getQuery());
+//
+//        return $qb->getQuery()->getResult();
+//    }
+//
+//
+//
+    public function findByYearAndMonthAndWorker(int $year, int $month, string $workerId)
+    {
+        $sql = "
+            SELECT *
+            FROM work_time 
+            WHERE YEAR(day) = '$year' 
+            AND MONTH(day) = '$month' 
+            AND worker_id = '$workerId'
+        ";
 
-    //    public function findOneBySomeField($value): ?WorkTime
-    //    {
-    //        return $this->createQueryBuilder('w')
-    //            ->andWhere('w.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $connection = $this->entityManager->getConnection();
+        $stmt = $connection->executeQuery($sql);
+
+        return $stmt->fetchAll();
+    }
 }

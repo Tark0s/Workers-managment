@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\WorkTime;
 use App\Repository\WorkerRepository;
+use App\Repository\WorkTimeRepository;
 use App\Service\WorkTimeService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,5 +36,58 @@ class WorkTimesApiController extends AbstractController
         }
 
         return new JsonResponse(['message' => 'Working time has been added!'], Response::HTTP_CREATED);
+    }
+
+    #[Route(name: 'app_work_time_api_summary', methods: ['GET'])]
+    public function summary(
+        Request $request,
+        WorkTimeRepository $workTimeRepository,
+        WorkerRepository $workerRepository,
+        LoggerInterface $logger
+    ): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $dateLength = strlen($data['date']);
+
+        $worker = $workerRepository->find($data['workerId']);
+
+        $hourlyRate = (int) $this->getParameter('hourly_rate');
+        $overtimeHourlyRate = $hourlyRate * $this->getParameter('overtime_multiplier');
+
+        switch ($dateLength){
+            case 10:
+                $date = \DateTime::createFromFormat('d.m.Y', $data['date']);
+
+                $workTime = $workTimeRepository->findOneBy(['worker' => $worker, 'day' => $date]);
+                $workHours = $workTime->getWorkHours();
+                $total = $workHours * $hourlyRate;
+
+                return new JsonResponse([
+                    'total after recalculation' => sprintf("%d %s", $total, $this->getParameter('currency')),
+                    'number of hours of a given day' => $workHours,
+                    'hourly rate' => $hourlyRate,
+                ], Response::HTTP_OK);
+
+            case 7:
+                $date = \DateTime::createFromFormat('m.Y', $data['date']);
+
+//                TODO
+                $workTimes = $workTimeRepository->findByYearAndMonthAndWorker($date->format('Y'), $date->format('m'), $worker->getId());
+
+
+                return new JsonResponse([
+                    'hourly rate' => $hourlyRate,
+                    'overtime hourly rate' => $overtimeHourlyRate ,
+//                    // TODO
+//                    'number of normal hours of a given month' => "TODO",
+                ], Response::HTTP_OK);
+
+            default:
+                return new JsonResponse([
+                    'message' => 'error'
+                ], Response::HTTP_BAD_GATEWAY);
+
+        }
     }
 }
