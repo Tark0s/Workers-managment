@@ -29,3 +29,7 @@ services:
     App\Service\WorkerService:
         arguments:
             $entityManager: '@doctrine.orm.entity_manager'
+
+    App\Service\WorkTimeService:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'

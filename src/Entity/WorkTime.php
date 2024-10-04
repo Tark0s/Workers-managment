@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\WorkTimeRepository;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Ramsey\Uuid\UuidInterface;
@@ -10,6 +11,18 @@ use Ramsey\Uuid\UuidInterface;
 #[ORM\Entity(repositoryClass: WorkTimeRepository::class)]
 class WorkTime
 {
+    public function __construct(
+        Worker $worker,
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate
+    )
+    {
+        $this->worker = $worker;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->day = \DateTime::createFromFormat('Y-m-d', $startDate->format('Y-m-d'));
+    }
+
     #[ORM\Id]
     #[ORM\Column(type: "uuid", unique: true)]
     #[ORM\GeneratedValue(strategy: "CUSTOM")]
@@ -39,34 +52,14 @@ class WorkTime
         return $this->worker;
     }
 
-    public function setWorker($worker): void
-    {
-        $this->worker = $worker;
-    }
-
     public function getStartDate(): ?\DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): self
-    {
-        $this->startDate = $startDate;
-        $this->day = \DateTime::createFromFormat('Y-m-d', $startDate->format('Y-m-d'));
-
-        return $this;
-    }
-
     public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
-    }
-
-    public function setEndDate(\DateTimeInterface $endDate): self
-    {
-        $this->endDate = $endDate;
-
-        return $this;
     }
 
     public function getDay(): \DateTimeInterface
