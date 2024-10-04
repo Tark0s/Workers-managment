@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "c951318a-89d4-465e-8127-7edee7a60f13",
+		"name": "Innovation-task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38792909"
+	},
+	"item": [
+		{
+			"name": "Add worker",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Łukasz\",\r\n    \"surname\": \"Tarkowski\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/workers",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"workers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add work time",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    // enter your ID here, this data is an example\r\n    \"workerId\": \"d8ad99f7-573c-4073-b021-a7024779caa8\",\r\n    \"startDateTime\": \"05.01.1970 09:00\",\r\n    \"endDateTime\": \"05.01.1970 15:00\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/work-times",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"work-times"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Summary of working time",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    // enter your ID here, this data is an example\r\n    \"workerId\": \"d8ad99f7-573c-4073-b021-a7024779caa8\",\r\n    \"date\": \"01.1970\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8000/api/work-times",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"work-times"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
